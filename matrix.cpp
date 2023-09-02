@@ -1,5 +1,5 @@
 #include "matrix.h"
-#include<random>
+#include <random>
 #include<iostream>
 
 int& utec::matrix::operator()(int a, int b) const{
@@ -15,18 +15,20 @@ utec::matrix::matrix(int a, int b){
     }
 }
 
+
+
 int utec::matrix::rows() const { //se pone utec::matrix::rows, porque el utec::matrix es para que reconozca a la clase
     //el matrix::rows para que se pueda acceder a los atributos de la clase.
     return filas;
 }
 
-int utec::matrix::cols() const{
+int utec::matrix::cosl() const{
     return columnas;
 }
 std::ostream& utec::operator<<(std::ostream& out, const utec::matrix& pe){
 
     for(int i=0;i<pe.rows();i+=1){
-        for(int j=0;j<pe.cols();j+=1){
+        for(int j=0;j<pe.cosl();j+=1){
             out<< pe(i,j) << "\t";
         }
         out <<"\n";
@@ -36,7 +38,7 @@ std::ostream& utec::operator<<(std::ostream& out, const utec::matrix& pe){
 }
 
 std::istream& utec::operator>>(std::istream& in, utec::matrix &pe) {
-    return in >> pe(pe.filas,pe.columnas);
+    return in >> pe(pe.rows(),pe.cosl());
 }
 utec::matrix& utec::matrix::operator=( const utec::matrix& pe) {
 
@@ -121,7 +123,7 @@ bool utec::matrix::operator!=(matrix& pe){
 utec::matrix utec::matrix::operator*(const matrix& pe1) const { //si pongo el const afuera afecta al objeto de la clase directa
     //si lo pongo adentro de los () afecta al objeto de los parametros
     if(columnas == pe1.filas){
-        matrix pe3(pe1.filas,pe1.columnas); //crea una matriz dinamica con las filas de la 1era matriz y las columnas
+        matrix pe3(filas,pe1.columnas); //crea una matriz dinamica con las filas de la 1era matriz y las columnas
         // de la 2da matriz
 
         for(int i=0;i<pe3.filas;i+=1){
@@ -140,6 +142,8 @@ utec::matrix utec::matrix::operator*(const matrix& pe1) const { //si pongo el co
 
         return pe3;
     }
+
+    return utec::matrix();
 
 
 }
@@ -177,6 +181,7 @@ utec::matrix& utec::matrix::operator*=(int pe){
 utec::matrix utec::matrix::operator*(int pe){
     utec::matrix te((*this).filas,(*this).columnas);
 
+
     for(int i=0;i<filas;i+=1){
         for(int j=0;j<columnas;j+=1){
             te(i,j) = 0;
@@ -190,4 +195,16 @@ utec::matrix utec::matrix::operator*(int pe){
 
 utec::matrix utec::operator*(int pe,  matrix& te) { //asi se pone cuando estamos ingresando con friends
     return te*pe; //se podría hacer directo porque estamos aplicando la sobrecarga de arriba
+}
+
+utec::matrix::matrix(matrix&& pe) { //CONSTructor move
+
+
+    filas = pe.filas;
+    columnas = pe.columnas;
+    std::swap(data,pe.data);
+
+    // Establece 'other' en un estado válido (opcional, pero buena práctica)
+    pe.filas = 0;
+    pe.columnas = 0;
 }
